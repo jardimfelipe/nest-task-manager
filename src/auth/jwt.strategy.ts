@@ -3,6 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Repository } from 'typeorm';
+
 import { User } from './user.entity';
 import { JwtPayload } from './jwt-payload.interface';
 
@@ -14,14 +15,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   ) {
     super({
       secretOrKey: 'topScret51',
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken,
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     });
   }
 
   async validate(payload: JwtPayload): Promise<User> {
     const { username } = payload;
     const user = await this.usersRepository.findOneBy({ username });
-
     if (!user) {
       throw new UnauthorizedException();
     }
